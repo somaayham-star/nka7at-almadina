@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>نكهات المدينة🍦</title>
+<style>
+  :root{
+    --w: 320px;
+    --h: 420px;
+    --gap: 220px;
+    --depth: 140px;
+    --scale-side: .72;
+    --scale-back: .58;
+    --blur-side: 1.2px;
+    --blur-back: 2.2px;
+    --shadow: 0 20px 40px rgba(0,0,0,.25);
+    --bg: #DA7F66;
+    --cream: #F3E9D9;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100dvh; display:grid; place-items:center;
+    background: radial-gradient(1200px 1200px at 70% 20%, #eaa48f 0%, var(--bg) 60%);
+    font-family: "Cairo", "Noto Naskh Arabic", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  }
+
+  /* الساعة الأصلية الأنيقة */
+  .clock-wrapper {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 999;
+  }
+  .clock-input {
+    display: flex;
+    position: relative;
+    width: 100px;
+    height: 100px;
+    background: conic-gradient(
+      from -2deg,
+      #41012158,
+      #00000088,
+      #101049eb,
+      #00000088,
+      #a910703f
+    ),
+    radial-gradient(#0004, #fff4),
+    radial-gradient(circle at 12% 12%, #efefff, #9999a4);
+    background-size: calc(100% + 8px) calc(100% + 8px);
+    background-position: -4px -4px;
+    border: 4px solid #0005;
+    border-radius: 50%;
+  }
+  .dial { position: absolute; width: 26px; height: 4px; border-radius: 99px; background-color: #000b; top: calc(50% - 2px); left: calc(50% - 2px); transform-origin: 2px 50%; pointer-events: none; transition: 0.15s; }
+  .dial2 { position: absolute; width: 20px; height: 3px; border-radius: 99px; background-color: #b00; top: calc(50% - 1.5px); left: calc(50% - 1.5px); transform-origin: 1.5px 50%; pointer-events: none; transition: 0.15s; }
+  .dial3 { position: absolute; width: 28px; height: 2px; border-radius: 99px; background-color: #06f; top: calc(50% - 1px); left: calc(50% - 1px); transform-origin: 1px 50%; pointer-events: none; transition: 0.15s; }
+
+  /* العنوان */
+  .title {
+    text-align: center;
+    font-size: 3rem;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 2px 2px 6px rgba(0,0,0,.3);
+    margin-bottom: 24px;
+    display: inline-block;
+    letter-spacing: 0;
+    font-family: 'Cairo', sans-serif;
+    animation: floatTitle 2.5s ease-in-out infinite alternate;
+  }
+  @keyframes floatTitle { 0% { transform: translateY(0) scale(1); } 50% { transform: translateY(-6px) scale(1.03); } 100% { transform: translateY(0) scale(1); } }
+
+  .stage{
+    width:min(100vw, 1100px);
+    padding:48px 16px 80px;
+    perspective: 1200px;
+    position:relative;
+  }
+
+  .carousel{
+    position:relative; height: var(--h); display:grid; place-items:center; z-index:1;
+    transform-style: preserve-3d;
+  }
+
+  .item{
+    position:absolute; width: var(--w); height: var(--h);
+    border-radius: 26px;
+    background: #fff;
+    display:grid; place-items:center;
+    transition: transform .6s cubic-bezier(.2,.8,.2,1), filter .6s, opacity .6s, box-shadow .6s;
+    will-change: transform, filter, opacity;
+    box-shadow: var(--shadow);
+    overflow:hidden;
+    cursor:pointer;
+    flex-direction: column;
+    padding-bottom: 20px;
+  }
+  .item img{
+    width: 86%; height:auto; pointer-events:none; user-select:none;
+    transform: translateY(6px);
+  }
+  .item::after{
+    content:""; position:absolute; inset:0; background: linear-gradient(180deg, rgba(255,255,255,.08), transparent 50%);
+    pointer-events:none;
+  }
+
+  .item[data-pos="0"]{ z-index: 50; transform: translate3d(0, 0, 0) scale(1) rotateY(0deg); filter: blur(0);}
+  .item[data-pos="-1"]{ z-index: 40; transform: translate3d(calc(-1*var(--gap)), 0, -40px) scale(var(--scale-side)) rotateY(18deg); filter: blur(var(--blur-side)) saturate(.9); opacity:.95;}
+  .item[data-pos="1"]{ z-index: 40; transform: translate3d(var(--gap), 0, -40px) scale(var(--scale-side)) rotateY(-18deg); filter: blur(var(--blur-side)) saturate(.9); opacity:.95;}
+  .item[data-pos="-2"]{ z-index: 30; transform: translate3d(calc(-2*var(--gap)), 0, calc(-1*var(--depth))) scale(var(--scale-back)) rotateY(24deg); filter: blur(var(--blur-back)) saturate(.85); opacity:.75;}
+  .item[data-pos="2"]{ z-index: 30; transform: translate3d(calc(2*var(--gap)), 0, calc(-1*var(--depth))) scale(var(--scale-back)) rotateY(-24deg); filter: blur(var(--blur-back)) saturate(.85); opacity:.75;}
+
+  .flavor-name {
+    margin-top: 12px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #333;
+    text-align: center;
+  }
+
+  .controls{ margin-top:22px; display:flex; gap:12px; justify-content:center;}
+  .btn{ border:0; padding:10px 14px; border-radius:999px; cursor:pointer; font-weight:600; background:#fff; box-shadow:0 8px 20px rgba(0,0,0,.12);}
+  .btn:active{ transform: translateY(1px); }
+
+  .stage:hover .carousel{ transition: transform .15s; }
+
+  /* Footer أيقونات التواصل فقط */
+  .footer{
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+  .footer a{
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    background-color: #fff;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 50px;
+    font-size: 24px;
+    color: #DA7F66;
+    transition: transform .2s, background-color .2s, color .2s;
+  }
+  .footer a:hover{
+    transform: scale(1.2);
+    background-color: #ffd700;
+    color: #fff;
+  }
+
+  @media (max-width: 900px){
+    :root{ --w: 260px; --h: 360px; --gap: 180px; }
+  }
+  @media (max-width: 600px){
+    :root{ --w: 220px; --h: 320px; --gap: 150px; --depth: 100px; }
+  }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+</head>
+<body>
+
+<!-- الساعة -->
+<div class="clock-wrapper">
+  <div class="clock-input">
+    <div class="dial" id="hourHand"></div>
+    <div class="dial2" id="minuteHand"></div>
+    <div class="dial3" id="secondHand"></div>
+  </div>
+</div>
+
+<div class="stage" id="stage">
+
+  <!-- العنوان -->
+  <h1 class="title">نكهات المدينة🍦</h1>
+
+  <!-- الكاروسيل -->
+  <div class="carousel" id="carousel" aria-live="polite">
+    <div class="item" data-index="0">
+      <img alt="Cookies & Cream" src="images/ice6.jpg" />
+      <div class="flavor-name">بوظة الكوكيز</div>
+    </div>
+    <div class="item" data-index="1">
+      <img alt="Mint" src="images/ice2.jpg.jpg" />
+      <div class="flavor-name">فستق</div>
+    </div>
+    <div class="item" data-index="2">
+      <img alt="Strawberry" src="images/ice3.jpg.jpg" />
+      <div class="flavor-name">اوريو</div>
+    </div>
+    <div class="item" data-index="3">
+      <img alt="Pistachio" src="images/ice4.jpg (2).jpg" />
+      <div class="flavor-name">مسكة</div>
+    </div>
+    <div class="item" data-index="4">
+      <img alt="Chocolate" src="images/ice5.jpg.jpg" />
+      <div class="flavor-name">شوكولاتة</div>
+    </div>
+  </div>
+
+  <!-- أزرار التحكم -->
+  <div class="controls">
+    <button class="btn" id="prev" aria-label="السابق">◀︎</button>
+    <button class="btn" id="next" aria-label="التالي">▶︎</button>
+  </div>
+
+  <!-- Footer مع الروابط -->
+  <div class="footer">
+    <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
+    <a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+    <a href="https://wa.me/123456789" target="_blank"><i class="fab fa-whatsapp"></i></a>
+    <a href="https://www.snapchat.com" target="_blank"><i class="fab fa-snapchat-ghost"></i></a>
+  </div>
+
+</div>
+
+<script>
+const carousel = document.getElementById('carousel');
+const items = Array.from(carousel.querySelectorAll('.item'));
+let order = items.map((_, i) => i);
+const visibleSpan = 2;
+
+function render(){
+  for (let i=0; i<items.length; i++){
+    const idx = order[i];
+    const el = items[idx];
+    let pos = 0;
+    if (i === 0) pos = 0;
+    else if (i <= visibleSpan) pos = i;
+    else if (i >= order.length - visibleSpan) pos = i - order.length;
+    else pos = 2;
+
+    el.setAttribute('data-pos', pos);
+    el.setAttribute('aria-hidden', pos !== 0 ? 'true' : 'false');
+    el.style.pointerEvents = pos === 0 || Math.abs(pos) === 1 ? 'auto' : 'none';
+  }
+}
+
+function next(){ order.push(order.shift()); render(); }
+function prev(){ order.unshift(order.pop()); render(); }
+
+items.forEach((el, i)=>{
+  el.addEventListener('click', ()=>{
+    const isFront = order[0] === i;
+    if (isFront) next();
+    else { while(order[0] !== i) next(); }
+  });
+});
+
+document.getElementById('next').addEventListener('click', next);
+document.getElementById('prev').addEventListener('click', prev);
+
+const stage = document.getElementById('stage');
+stage.addEventListener('mousemove', (e)=>{
+  const r = stage.getBoundingClientRect();
+  const x = ((e.clientX - r.left)/r.width - .5) * 8;
+  const y = ((e.clientY - r.top)/r.height - .5) * -6;
+  carousel.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+});
+stage.addEventListener('mouseleave', ()=>{
+  carousel.style.transform = `rotateY(0deg) rotateX(0deg)`;
+});
+
+render();
+
+/* تحديث الساعة الفلسطينية */
+function updateClock() {
+  const now = new Date().toLocaleString("en-US", { timeZone: "Asia/Gaza" });
+  const date = new Date(now);
+
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
+
+  const hourAngle = ((hours % 12) + minutes / 60) * 30;
+  const minuteAngle = (minutes + seconds / 60) * 6;
+  const secondAngle = seconds * 6;
+
+  document.getElementById("hourHand").style.transform = `rotate(${hourAngle}deg)`;
+  document.getElementById("minuteHand").style.transform = `rotate(${minuteAngle}deg)`;
+  document.getElementById("secondHand").style.transform = `rotate(${secondAngle}deg)`;
+}
+
+setInterval(updateClock, 1000);
+updateClock();
+</script>
+
+</body>
+</html>
